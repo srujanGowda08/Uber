@@ -1,3 +1,5 @@
+# Backend Endpoints
+
 # User Registration Endpoint Documentation
 
 ## Endpoints
@@ -320,3 +322,112 @@ If the token is invalid, expired, or blacklisted, the response will include an e
 
 - This endpoint requires authentication. Ensure the token is valid and not blacklisted.
 - Blacklisted tokens are stored in the `blackListToken` collection.
+
+
+# Captain Registration Endpoint Documentation
+
+## Endpoint
+### POST /captains/register
+
+---
+
+## Description
+This endpoint allows a new captain to register by providing their personal details, email, password, and vehicle information. The system will hash the password, store the captain details in the database, and generate a JWT token for authentication.
+
+---
+
+## Request
+### Headers
+- **Content-Type**: `application/json`
+
+### Body
+The request body must be a JSON object with the following structure:
+
+```json
+{
+  "fullname": {
+    "firstname": "<string>",
+    "lastname": "<string>"
+  },
+  "email": "<string>",
+  "password": "<string>",
+  "vehicle": {
+    "color": "<string>",
+    "plate": "<string>",
+    "capacity": <number>,
+    "vehicleType": "<string>"
+  }
+}
+```
+
+### Validation Rules
+- **email** (string, required): Must be a valid email address.
+- **fullname.firstname** (string, required): Must be at least 3 characters long.
+- **fullname.lastname** (string, optional): Must be at least 3 characters long if provided.
+- **password** (string, required): Must be at least 6 characters long.
+- **vehicle.color** (string, required): Must be at least 3 characters long.
+- **vehicle.plate** (string, required): Must be unique and at least 3 characters long.
+- **vehicle.capacity** (number, required): Must be an integer greater than or equal to 1.
+- **vehicle.vehicleType** (string, required): Must be one of `car`, `motorcycle`, or `auto`.
+
+---
+
+## Response
+### Success (201 Created)
+If the registration is successful, the response will include the newly created captain object and a JWT token.
+
+#### Example Response:
+```json
+{
+  "captain": {
+    "_id": "<captain_id>",
+    "fullname": {
+      "firstname": "<string>",
+      "lastname": "<string>"
+    },
+    "email": "<string>",
+    "vehicle": {
+      "color": "<string>",
+      "plate": "<string>",
+      "capacity": <number>,
+      "vehicleType": "<string>"
+    }
+  },
+  "token": "<jwt_token>"
+}
+```
+
+### Error (400 Bad Request)
+If the request fails validation or the captain already exists, the response will include an error message.
+
+#### Example Response:
+```json
+{
+  "errors": [
+    {
+      "msg": "Invalid email",
+      "param": "email",
+      "location": "body"
+    },
+    {
+      "msg": "First name must be at least 3 characters",
+      "param": "fullname.firstname",
+      "location": "body"
+    }
+  ]
+}
+```
+
+---
+
+## Status Codes
+- **201 Created**: Captain registration successful.
+- **400 Bad Request**: Validation failed or missing required fields.
+- **409 Conflict**: Captain with the provided email already exists.
+
+---
+
+## Notes
+- Ensure that the `JWT_SECRET` environment variable is configured correctly for token generation.
+- The password is stored as a hashed value using bcrypt.
+- The vehicle plate number must be unique across all captains.
