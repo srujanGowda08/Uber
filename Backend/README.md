@@ -200,3 +200,123 @@ If the credentials are incorrect or the user does not exist, the response will i
 
 - Ensure that the `JWT_SECRET` environment variable is configured correctly for token generation.
 - Passwords are compared using bcrypt.
+
+---
+
+### GET /users/profile
+
+### Description
+
+This endpoint retrieves the profile of the currently authenticated user.
+
+---
+
+### Request
+
+#### Headers
+
+- **Authorization**: `Bearer <jwt_token>`
+
+---
+
+### Response
+
+#### Success (200 OK)
+
+If the user is authenticated, the response will include the user's profile information.
+
+##### Example Response:
+
+```json
+{
+  "_id": "<user_id>",
+  "fullname": {
+    "firstname": "<string>",
+    "lastname": "<string>"
+  },
+  "email": "<string>"
+}
+```
+
+#### Error (401 Unauthorized)
+
+If the token is invalid, expired, or blacklisted, the response will include an error message.
+
+##### Example Response:
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+---
+
+### Status Codes
+
+- **200 OK**: Profile retrieval successful.
+- **401 Unauthorized**: Invalid or missing token.
+
+---
+
+### Notes
+
+- This endpoint requires authentication. Ensure the token is valid and not blacklisted.
+
+---
+
+### GET /users/logout
+
+### Description
+
+This endpoint logs out the currently authenticated user by blacklisting the token and clearing the authentication cookie.
+
+---
+
+### Request
+
+#### Headers
+
+- **Authorization**: `Bearer <jwt_token>`
+
+---
+
+### Response
+
+#### Success (200 OK)
+
+If the logout is successful, the response will confirm the operation.
+
+##### Example Response:
+
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+#### Error (401 Unauthorized)
+
+If the token is invalid, expired, or blacklisted, the response will include an error message.
+
+##### Example Response:
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+---
+
+### Status Codes
+
+- **200 OK**: Logout successful.
+- **401 Unauthorized**: Invalid or missing token.
+
+---
+
+### Notes
+
+- This endpoint requires authentication. Ensure the token is valid and not blacklisted.
+- Blacklisted tokens are stored in the `blackListToken` collection.
