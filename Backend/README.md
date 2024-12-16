@@ -323,24 +323,28 @@ If the token is invalid, expired, or blacklisted, the response will include an e
 - This endpoint requires authentication. Ensure the token is valid and not blacklisted.
 - Blacklisted tokens are stored in the `blackListToken` collection.
 
-
 # Captain Registration Endpoint Documentation
 
 ## Endpoint
+
 ### POST /captains/register
 
 ---
 
 ## Description
+
 This endpoint allows a new captain to register by providing their personal details, email, password, and vehicle information. The system will hash the password, store the captain details in the database, and generate a JWT token for authentication.
 
 ---
 
 ## Request
+
 ### Headers
+
 - **Content-Type**: `application/json`
 
 ### Body
+
 The request body must be a JSON object with the following structure:
 
 ```json
@@ -361,6 +365,7 @@ The request body must be a JSON object with the following structure:
 ```
 
 ### Validation Rules
+
 - **email** (string, required): Must be a valid email address.
 - **fullname.firstname** (string, required): Must be at least 3 characters long.
 - **fullname.lastname** (string, optional): Must be at least 3 characters long if provided.
@@ -373,10 +378,13 @@ The request body must be a JSON object with the following structure:
 ---
 
 ## Response
+
 ### Success (201 Created)
+
 If the registration is successful, the response will include the newly created captain object and a JWT token.
 
 #### Example Response:
+
 ```json
 {
   "captain": {
@@ -398,9 +406,11 @@ If the registration is successful, the response will include the newly created c
 ```
 
 ### Error (400 Bad Request)
+
 If the request fails validation or the captain already exists, the response will include an error message.
 
 #### Example Response:
+
 ```json
 {
   "errors": [
@@ -421,6 +431,7 @@ If the request fails validation or the captain already exists, the response will
 ---
 
 ## Status Codes
+
 - **201 Created**: Captain registration successful.
 - **400 Bad Request**: Validation failed or missing required fields.
 - **409 Conflict**: Captain with the provided email already exists.
@@ -428,6 +439,168 @@ If the request fails validation or the captain already exists, the response will
 ---
 
 ## Notes
+
 - Ensure that the `JWT_SECRET` environment variable is configured correctly for token generation.
 - The password is stored as a hashed value using bcrypt.
 - The vehicle plate number must be unique across all captains.
+
+---
+
+## Additional Endpoints
+
+### POST /captains/login
+
+### Description
+
+This endpoint allows a captain to log in by providing valid credentials.
+
+---
+
+### Request
+
+#### Headers
+
+- **Content-Type**: `application/json`
+
+#### Body
+
+The request body must be a JSON object with the following structure:
+
+```json
+{
+  "email": "<string>",
+  "password": "<string>"
+}
+```
+
+#### Validation Rules
+
+- **email** (string, required): Must be a valid email address.
+- **password** (string, required): Must be at least 6 characters long.
+
+---
+
+### Response
+
+#### Success (200 OK)
+
+If login is successful, the response will include the captain object and a JWT token.
+
+##### Example Response:
+
+```json
+{
+  "captain": {
+    "_id": "<captain_id>",
+    "email": "<string>"
+  },
+  "token": "<jwt_token>"
+}
+```
+
+#### Error (401 Unauthorized)
+
+If the credentials are invalid, the response will include an error message.
+
+##### Example Response:
+
+```json
+{
+  "message": "Invalid email or password"
+}
+```
+
+---
+
+### GET /captains/profile
+
+### Description
+
+This endpoint allows a captain to retrieve their profile details. Requires authentication.
+
+---
+
+### Request
+
+#### Headers
+
+- **Authorization**: `Bearer <token>`
+
+---
+
+### Response
+
+#### Success (200 OK)
+
+If authentication is successful, the response will include the captain's profile details.
+
+##### Example Response:
+
+```json
+{
+  "captain": {
+    "_id": "<captain_id>",
+    "email": "<string>"
+  }
+}
+```
+
+#### Error (401 Unauthorized)
+
+If authentication fails, the response will include an error message.
+
+##### Example Response:
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+---
+
+### GET /captains/logout
+
+### Description
+
+This endpoint logs out a captain by invalidating their token.
+
+---
+
+### Request
+
+#### Headers
+
+- **Authorization**: `Bearer <token>`
+
+---
+
+### Response
+
+#### Success (200 OK)
+
+If logout is successful, the response will include a confirmation message.
+
+##### Example Response:
+
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+#### Error (401 Unauthorized)
+
+If authentication fails, the response will include an error message.
+
+##### Example Response:
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+---
+
+
